@@ -22,8 +22,11 @@ garbage_phrases = [
 categories = {
     "Programming Roadmaps and Learning": ["python", "roadmap", "learn", "tutorial"],
     "Coding/Tech Projects": ["project", "portfolio", "build", "github"],
-    "Job Search": ["job", "career", "resume", "interview", "linkedin"]
+    "Job Search": ["job", "career", "resume", "interview", "linkedin"],
+    "AI/ML": ["ai", "ml", "artificial intelligence", "machine learning"],
 }
+
+
 
 async def scrape_and_categorize(session, url):
     try:
@@ -52,15 +55,20 @@ async def scrape_and_categorize(session, url):
                 text = text.replace(phrase, "")
 
         # Normalize text for matching
-            text = text.lower()
+        text = text.lower()
 
+        '''
+        print(f"\n🔗 URL: {url}")
+        print(f"📄 Raw text snippet:\n{text[:300]}")
+        print(f"🧪 Text length: {len(text)}")
+        '''
         #Step 4: Categorize the link
         found_category = "Uncategorized"  # Default value
 
         for category, keywords in categories.items():
             for keyword in keywords:
                 if keyword in text:
-                    found_category = category #I don't understand
+                    found_category = category 
                     break
             if found_category != "Uncategorized":
                 break
@@ -70,11 +78,13 @@ async def scrape_and_categorize(session, url):
         print(f"⚠️ Error scraping {url}: {e}")
         return (url, "Uncategorized")
 
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+}
 
-#<----
 async def main():
     results = []
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(headers=headers) as session:
         tasks = []
         for url in links:
             task = scrape_and_categorize(session, url)
